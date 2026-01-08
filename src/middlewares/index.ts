@@ -44,3 +44,14 @@ export const isOwner = async (req: express.Request, res: express.Response, next:
     }
 
 }
+
+
+export const isError = (err: any, req: express.Request, res: express.Response, next: express.NextFunction) => { 
+    try {
+        
+        
+    } catch (error) {
+        console.log(error);
+        return res.sendStatus(400);
+    }
+}

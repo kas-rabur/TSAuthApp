@@ -52,3 +52,26 @@ export const updateUser = async (req: express.Request, res: express.Response) =>
     return res.sendStatus(400);
   }
 };
+
+export const updateEmail = async (req: express.Request, res: express.Response) => {
+    try {
+        const { id } = req.params;
+        const { email } = req.body;
+
+        if (!id || !email) {
+            return res.sendStatus(400);
+        }
+        const user = await getUserByID(id);
+        if (!user) {
+            return res.sendStatus(404);
+        }
+        user.email = email;
+        await user.save();
+        return res.status(200).json(user);
+
+    } catch (error) {
+        console.log(error);
+        return res.sendStatus(400);
+    }
+}
+

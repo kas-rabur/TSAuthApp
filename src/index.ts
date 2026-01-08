@@ -9,10 +9,8 @@ import router from './router';
 
 
 const app = express();
-app.use(cors({
-    credentials: true
-}));
 
+app.use(cors({credentials: true}));
 app.use(compression());
 app.use(cookieParser());
 app.use(bodyParser.json());
@@ -25,7 +23,7 @@ server.listen(8080, () => {
 
 const MONGO_URL = 'mongodb+srv://kacper:Kacper@tsproj.hcs4dnb.mongodb.net/?appName=TSProj';
 
-mongoose.Promise = Promise;
+//mongoose.Promise = Promise;
 mongoose.connect(MONGO_URL);
 mongoose.connection.on('error', (error: Error) => console.log(error));
 

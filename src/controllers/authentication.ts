@@ -1,7 +1,7 @@
 //this is where you write your databse actions for authentication and user management
 
 import express, { response } from 'express';
-import { getUserByEmail, createUser } from '../db/users';
+import { getUserByEmail, createUser, getUserByID } from '../db/users';
 import {random, authentication} from '../helpers';
 
 
@@ -71,3 +71,42 @@ export const register = async (req: express.Request, res: express.Response) => {
         return res.sendStatus(400);
     }    
 }
+
+export const updatePassword = async (req: express.Request, res: express.Response) => {
+  try {
+    console.log("hit updatePassword");
+
+    const { id } = req.params;
+    const body = req.body || {};
+    const { newPassword, currentPassword } = body;
+
+    if (!id || !newPassword || !currentPassword) {
+      console.log("missing fields");
+      return res.sendStatus(400);
+    }
+
+    const user = await getUserByID(id).select('+authentication.salt +authentication.passwordHash');
+
+    if (!user) {
+      return res.sendStatus(404);
+    }
+
+    const providedHash = authentication(user.authentication.salt, currentPassword);
+
+    if (providedHash !== user.authentication.passwordHash) {
+    return res.status(403).json({ message: "Current password incorrect" });
+    }
+
+
+    const salt = random();
+    user.authentication.salt = salt;
+    user.authentication.passwordHash = authentication(salt, newPassword);
+
+    await user.save();
+
+    return res.sendStatus(204);
+  } catch (err) {
+    console.error("updatePassword error:", err);
+    return res.sendStatus(500);
+  }
+};
